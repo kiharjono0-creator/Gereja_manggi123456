@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kas Pembangunan GTM Jemaat Manggi</title>
+
+  <style>
+    :root {
+      --primary: #166534;
+      --primary-dark: #14532d;
+      --secondary: #f59e0b;
+      --danger: #dc2626;
+      --blue: #2563eb;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #dbe3ec;
+      --shadow: 0 8px 24px rgba(15, 23, 42, .08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(241, 245, 249, .95), rgba(241, 245, 249, .95)),
+        url("https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1600&q=80")
+        center / cover fixed;
+    }
+
+    .container {
+      width: min(1100px, 94%);
+      margin: auto;
+    }
+
+    .hero,
+    .section,
+    .footer {
+      margin: 24px 0;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      color: white;
+      text-align: center;
+      padding: 42px 20px;
+      background: linear-gradient(135deg, #14532d, #166534 55%, #ca8a04);
+      border: 4px solid rgba(255, 255, 255, .8);
+    }
+
+    .hero h1 {
+      margin: 8px 0;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      letter-spacing: 2px;
+    }
+
+    .hero h2 {
+      margin: 8px 0;
+      font-size: clamp(1.1rem, 3vw, 1.7rem);
+    }
+
+    .hero p {
+      margin: 18px 0 0;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .section {
+      background: var(--card);
+      padding: 26px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 22px;
+      color: var(--primary-dark);
+      font-size: 1.45rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      padding: 22px;
+      border-radius: 14px;
+      color: white;
+      min-height: 125px;
+    }
+
+    .summary-card.income {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .summary-card.expense {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+
+    .summary-card.balance {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .summary-card span {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .summary-card strong {
+      font-size: 1.55rem;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .transaction-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .transaction-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .transaction-panel h3 {
+      margin: 0;
+      padding: 16px;
+      color: white;
+      font-size: 1.05rem;
+    }
+
+    .transaction-panel.income h3 {
+      background: var(--primary);
+    }
+
+    .transaction-panel.expense h3 {
+      background: var(--danger);
+    }
+
+    .transaction-list {
+      padding: 14px;
+      min-height: 230px;
+    }
+
+    .transaction-item {
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 4px;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: 0;
+    }
+
+    .transaction-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .transaction-item small {
+      color: var(--muted);
+    }
+
+    .transaction-amount {
+      display: block;
+      margin-top: 7px;
+      font-weight: bold;
+    }
+
+    .income .transaction-amount {
+      color: var(--primary);
+    }
+
+    .expense .transaction-amount {
+      color: var(--danger);
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 190px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .panel-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .info-card {
+      padding: 18px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border-left: 5px solid var(--secondary);
+    }
+
+    .info-card b {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .info-card span {
+      color: var(--muted);
+      word-break: break-word;
+    }
+
+    .report {
+      background: linear-gradient(135deg, #064e3b, #166534);
+      color: white;
+    }
+
+    .report .section-title {
+      color: white;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .25);
+    }
+
+    .report-row:last-of-type {
+      border-bottom: 0;
+    }
+
+    .report-actions,
+    .admin-actions,
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    button,
+    .button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 16px;
+      color: white;
+      background: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      transition: .2s;
+    }
+
+    button:hover,
+    .button:hover {
+      transform: translateY(-1px);
+      filter: brightness(.95);
+    }
+
+    button.secondary {
+      background: var(--blue);
+    }
+
+    button.warning {
+      background: var(--secondary);
+      color: #422006;
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.gray {
+      background: #64748b;
+    }
+
+    .admin-login {
+      display: flex;
+      gap: 10px;
+      max-width: 530px;
+    }
+
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .admin-login input,
+    .form-grid input,
+    .form-grid select,
+    .form-grid textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .admin-login input {
+      flex: 1;
+    }
+
+    .admin-panel {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .admin-panel.visible {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .footer {
+      padding: 34px 20px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #14532d, #166534);
+    }
+
+    .footer h2 {
+      margin: 6px 0 14px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 20;
+      display: none;
+      max-width: 330px;
+      padding: 14px 18px;
+      color: white;
+      background: #0f172a;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    @media (max-width: 720px) {
+      .summary-grid,
+      .transaction-columns,
+      .info-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-login {
+        flex-direction: column;
+      }
+
+      .hero {
+        padding: 28px 14px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .no-print,
+      .admin,
+      .hero,
+      .footer,
+      .search-box,
+      .panel-actions,
+      button {
+        display: none !important;
+      }
+
+      .section {
+        box-shadow: none;
+        margin: 0 0 18px;
+        break-inside: avoid;
+      }
+
+      .report {
+        color: #000;
+        background: white;
+        border: 1px solid #999;
+      }
+
+      .report .section-title {
+        color: #000;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>✦ TORAJA ✦</div>
+      <h1>🏗️ PANITIA PEMBANGUNAN</h1>
+      <h2>GTM JEMAAT MANGGI</h2>
+      <p>✦ TORAJA • MANGGI • GOTONG ROYONG ✦</p>
+    </header>
+
+    <section class="section">
+      <h2 class="section-title">📊 Dashboard Kas</h2>
+
+      <div class="summary-grid">
+        <div class="summary-card income">
+          <span>💰 PEMASUKAN</span>
+          <strong id="totalIncome">Rp 0</strong>
+        </div>
+
+        <div class="summary-card expense">
+          <span>💸 PENGELUARAN</span>
+          <strong id="totalExpense">Rp 0</strong>
+        </div>
+
+        <div class="summary-card balance">
+          <span>💵 SALDO</span>
+          <strong id="totalBalance">Rp 0</strong>
+        </div>
+      </div>
+
+      <div class="search-box no-print">
+        <label for="search"><b>🔎 CARI DATA</b></label>
+        <input
+          id="search"
+          type="search"
+          placeholder="Nama / tanggal / keterangan..."
+          oninput="renderTransactions()"
+        />
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">📋 Riwayat Transaksi</h2>
+
+      <div class="transaction-columns">
+        <div class="transaction-panel income">
+          <h3>💰 PEMASUKAN</h3>
+          <div id="incomeList" class="transaction-list"></div>
+          <div class="panel-actions no-print">
+            <button onclick="showMore('income')">👁️ Lihat berikutnya</button>
+          </div>
+        </div>
+
+        <div class="transaction-panel expense">
+          <h3>💸 PENGELUARAN</h3>
+          <div id="expenseList" class="transaction-list"></div>
+          <div class="panel-actions no-print">
+            <button onclick="showMore('expense')">👁️ Lihat berikutnya</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">🏗️ Informasi Pembangunan</h2>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <b>🏦 Nomor Rekening</b>
+          <span id="bankInfo">Belum diatur</span>
+        </div>
+
+        <div class="info-card">
+          <b>📱 WhatsApp Panitia</b>
+          <span id="whatsappInfo">Belum diatur</span>
+        </div>
+
+        <div class="info-card">
+          <b>📝 Keterangan Pembangunan</b>
+          <span id="descriptionInfo">Belum ada keterangan</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section report">
+      <h2 class="section-title">📄 Laporan</h2>
+
+      <div class="report-row">
+        <span>💰 Total Pemasukan</span>
+        <b id="reportIncome">Rp 0</b>
+      </div>
+
+      <div class="report-row">
+        <span>💸 Total Pengeluaran</span>
+        <b id="reportExpense">Rp 0</b>
+      </div>
+
+      <div class="report-row">
+        <span>💵 Saldo</span>
+        <b id="reportBalance">Rp 0</b>
+      </div>
+
+      <div class="report-actions no-print">
+        <button onclick="window.print()">🖨️ CETAK LAPORAN</button>
+        <button class="secondary" onclick="window.print()">📄 SIMPAN PDF</button>
+      </div>
+    </section>
+
+    <section class="section admin no-print">
+      <h2 class="section-title">🔐 Admin</h2>
+
+      <div class="admin-login">
+        <input
+          id="adminPassword"
+          type="password"
+          placeholder="Masukkan sandi admin"
+          onkeydown="if(event.key === 'Enter') loginAdmin()"
+        />
+        <button onclick="loginAdmin()">🔑 LOGIN ADMIN</button>
+      </div>
+
+      <div id="adminPanel" class="admin-panel">
+        <h3>Panel Administrasi</h3>
+
+        <form id="transactionForm" onsubmit="saveTransaction(event)">
+          <div class="form-grid">
+            <select id="transactionType" required>
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+
+            <input id="transactionDate" type="date" required />
+
+            <input
+              id="transactionName"
+              class="full"
+              type="text"
+              placeholder="Nama penyumbang / penerima"
+              required
+            />
+
+            <input
+              id="transactionDescription"
+              class="full"
+              type="text"
+              placeholder="Keterangan transaksi"
+              required
+            />
+
+            <input
+              id="transactionAmount"
+              type="number"
+              min="1"
+              placeholder="Jumlah rupiah"
+              required
+            />
+
+            <button type="submit">➕ Simpan Transaksi</button>
+          </div>
+        </form>
+
+        <div class="admin-actions">
+          <button class="secondary" onclick="exportData()">📤 Ekspor Data</button>
+
+          <label class="button warning">
+            📥 Impor Data
+            <input
+              type="file"
+              accept="application/json"
+              hidden
+              onchange="importData(event)"
+            />
+          </label>
+
+          <button class="warning" onclick="editInformation()">🎨 Edit Informasi</button>
+          <button class="danger" onclick="deleteAllData()">🗑️ Hapus Semua Data</button>
+          <button class="gray" onclick="logoutAdmin()">🚪 Logout</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>✦ MANGGI • TORAJA ✦</div>
+      <h2>GOTONG ROYONG BERSAMA</h2>
+      <div>Penanggung Jawab: PAULUS PATTOLA</div>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const ADMIN_PASSWORD = "910502";
+    const DELETE_PASSWORD = "PAULUSPATTOLA";
+
+    let data = JSON.parse(localStorage.getItem("kasManggi")) || {
+      transactions: [],
+      information: {
+        bank: "",
+        whatsapp: "",
+        description: ""
+      }
+    };
+
+    let visibleCount = {
+      income: 3,
+      expense: 3
+    };
+
+    let editingId = null;
+
+    const rupiah = value =>
+      new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(value || 0);
+
+    const escapeHtml = value =>
+      String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    function saveData() {
+      localStorage.setItem("kasManggi", JSON.stringify(data));
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2800);
+    }
+
+    function formatDate(date) {
+      if (!date) return "—";
+
+      return new Date(date + "T00:00:00").toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function updateSummary() {
+      const income = data.transactions
+        .filter(item => item.type === "income")
+        .reduce((sum, item) => sum + Number(item.amount), 0);
+
+      const expense = data.transactions
+        .filter(item => item.type === "expense")
+        .reduce((sum, item) => sum + Number(item.amount), 0);
+
+      const balance = income - expense;
+
+      document.getElementById("totalIncome").textContent = rupiah(income);
+      document.getElementById("totalExpense").textContent = rupiah(expense);
+      document.getElementById("totalBalance").textContent = rupiah(balance);
+
+      document.getElementById("reportIncome").textContent = rupiah(income);
+      document.getElementById("reportExpense").textContent = rupiah(expense);
+      document.getElementById("reportBalance").textContent = rupiah(balance);
+    }
+
+    function renderTransactions() {
+      const search = document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+      ["income", "expense"].forEach(type => {
+        const list = document.getElementById(type + "List");
+
+        const transactions = data.transactions
+          .filter(item => item.type === type)
+          .filter(item => {
+            const text = [
+              item.name,
+              item.description,
+              item.date,
+              item.amount
+            ].join(" ").toLowerCase();
+
+            return text.includes(search);
+          })
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const visible = transactions.slice(0, visibleCount[type]);
+
+        if (!visible.length) {
+          list.innerHTML = `
+            <div class="empty">
+              <div>
+                <div style="font-size:2rem">📭</div>
+                <div>Belum ada data</div>
+                <small>Tanggal: —</small>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = visible.map(item => `
+          <article class="transaction-item">
+            <strong>${escapeHtml(item.name)}</strong>
+            <div>${escapeHtml(item.description)}</div>
+            <small>Tanggal: ${formatDate(item.date)}</small>
+            <span class="transaction-amount">
+              ${type === "income" ? "+" : "-"} ${rupiah(item.amount)}
+            </span>
+
+            <div class="no-print" style="margin-top:8px">
+              <button
+                class="warning"
+                style="padding:6px 9px;font-size:.75rem"
+                onclick="editTransaction('${item.id}')"
+              >✏️ Edit</button>
+
+              <button
+                class="danger"
+                style="padding:6px 9px;font-size:.75rem"
+                onclick="deleteTransaction('${item.id}')"
+              >🗑️ Hapus</button>
+            </div>
+          </article>
+        `).join("");
+      });
+
+      updateSummary();
+    }
+
+    function showMore(type) {
+      visibleCount[type] += 3;
+      renderTransactions();
+    }
+
+    function loginAdmin() {
+      const password = document.getElementById("adminPassword").value;
+
+      if (password !== ADMIN_PASSWORD) {
+        showToast("Sandi admin salah.");
+        return;
+      }
+
+      document.getElementById("adminPanel").classList.add("visible");
+      document.getElementById("adminPassword").value = "";
+      showToast("Login admin berhasil.");
+    }
+
+    function logoutAdmin() {
+      document.getElementById("adminPanel").classList.remove("visible");
+      showToast("Anda telah logout.");
+    }
+
+    function saveTransaction(event) {
+      event.preventDefault();
+
+      const item = {
+        id: editingId || crypto.randomUUID(),
+        type: document.getElementById("transactionType").value,
+        date: document.getElementById("transactionDate").value,
+        name: document.getElementById("transactionName").value.trim(),
+        description: document.getElementById("transactionDescription").value.trim(),
+        amount: Number(document.getElementById("transactionAmount").value)
+      };
+
+      if (editingId) {
+        data.transactions = data.transactions.map(transaction =>
+          transaction.id === editingId ? item : transaction
+        );
+        showToast("Transaksi berhasil diperbarui.");
+      } else {
+        data.transactions.push(item);
+        showToast("Transaksi berhasil ditambahkan.");
+      }
+
+      editingId = null;
+      event.target.reset();
+      document.getElementById("transactionDate").value =
+        new Date().toISOString().slice(0, 10);
+
+      saveData();
+      renderTransactions();
+    }
+
+    function editTransaction(id) {
+      const item = data.transactions.find(transaction => transaction.id === id);
+      if (!item) return;
+
+      editingId = id;
+
+      document.getElementById("transactionType").value = item.type;
+      document.getElementById("transactionDate").value = item.date;
+      document.getElementById("transactionName").value = item.name;
+      document.getElementById("transactionDescription").value = item.description;
+      document.getElementById("transactionAmount").value = item.amount;
+
+      document
+        .getElementById("transactionForm")
+        .scrollIntoView({ behavior: "smooth" });
+    }
+
+    function deleteTransaction(id) {
+      if (!confirm("Hapus transaksi ini?")) return;
+
+      data.transactions = data.transactions.filter(item => item.id !== id);
+      saveData();
+      renderTransactions();
+      showToast("Transaksi berhasil dihapus.");
+    }
+
+    function editInformation() {
+      const bank = prompt(
+        "Nomor rekening:",
+        data.information.bank || ""
+      );
+
+      if (bank === null) return;
+
+      const whatsapp = prompt(
+        "Nomor WhatsApp panitia:",
+        data.information.whatsapp || ""
+      );
+
+      if (whatsapp === null) return;
+
+      const description = prompt(
+        "Keterangan pembangunan:",
+        data.information.description || ""
+      );
+
+      if (description === null) return;
+
+      data.information = { bank, whatsapp, description };
+      saveData();
+      renderInformation();
+      showToast("Informasi berhasil diperbarui.");
+    }
+
+    function renderInformation() {
+      document.getElementById("bankInfo").textContent =
+        data.information.bank || "Belum diatur";
+
+      document.getElementById("whatsappInfo").textContent =
+        data.information.whatsapp || "Belum diatur";
+
+      document.getElementById("descriptionInfo").textContent =
+        data.information.description || "Belum ada keterangan";
+    }
+
+    function exportData() {
+      const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = "backup-kas-jemaat-manggi.json";
+      anchor.click();
+
+      URL.revokeObjectURL(url);
+      showToast("Data berhasil diekspor.");
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+
+          if (!imported.transactions || !imported.information) {
+            throw new Error("Format tidak valid");
+          }
+
+          data = imported;
+          saveData();
+          renderInformation();
+          renderTransactions();
+          showToast("Data berhasil diimpor.");
+        } catch {
+          showToast("File backup tidak valid.");
+        }
+      };
+
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function deleteAllData() {
+      const password = prompt("Masukkan sandi hapus semua data:");
+
+      if (password !== DELETE_PASSWORD) {
+        showToast("Sandi hapus semua salah.");
+        return;
+      }
+
+      if (!confirm("PERINGATAN: semua transaksi dan informasi akan dihapus. Lanjutkan?")) {
+        return;
+      }
+
+      data = {
+        transactions: [],
+        information: {
+          bank: "",
+          whatsapp: "",
+          description: ""
+        }
+      };
+
+      saveData();
+      renderInformation();
+      renderTransactions();
+      showToast("Semua data berhasil dihapus.");
+    }
+
+    document.getElementById("transactionDate").value =
+      new Date().toISOString().slice(0, 10);
+
+    renderInformation();
+    renderTransactions();
+  </script>
+</body>
+</html>
